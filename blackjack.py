@@ -8,9 +8,9 @@ bet = 1
 
 jogar_novamente = "Aperte ENTER para jogar navamente e SPACE para sair!"
 
-naipe = ('E', 'C', 'O', 'P')
-ordem = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
-valor = {'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10}
+naipes = ('E', 'C', 'O', 'P')
+ordens = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
+valores = {'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10}
 
 
 class Carta:
@@ -53,7 +53,7 @@ class Mão:
 
         if carta.ordem == 'A':
             self.ace = True
-        self.valor += valor[carta.ordem]
+        self.valor += valores[carta.ordem]
 
     def calculoValor(self):
         if(self.ace == 'True' and self.valor < 12):
@@ -68,3 +68,41 @@ class Mão:
             cartaInicio = 0
         for x in range(cartaInicio, len(self.carta)):
             self.carta[x].draw()
+
+
+class Baralho:
+
+    def __init__(self):
+        self.baralho = []
+        for naipe in naipes:
+            for ordem in ordens:
+                self.baralho.append(Carta(naipe, ordem))
+
+    def embaralhar(self):
+        random.embaralhar(self.baralho)
+
+    def pedir(self):
+        umaCarta = self.baralho.pop()
+        return umaCarta
+
+    def __str__(self):
+        baralhoComp = ""
+        for carta in self.baralho:
+            baralhoComp += " " + carta.__str__()
+        return "O baralho tem " + baralhoComp
+
+
+def fazerAposta():
+    global aposta
+    aposta = 0
+
+    print("Qual o valor da sua aposta?")
+
+    while aposta == 0:
+        apostaComp = input()
+        apostaComp = int(apostaComp)
+
+        if apostaComp >= 1 and apostaComp <= chip_pool:
+            aposta = apostaComp
+        else:
+            print("Aposta Inválida!")
