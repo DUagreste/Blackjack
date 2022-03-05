@@ -23,10 +23,48 @@ class Carta:
         return self.naipe + self.ordem
 
     def grab_naipe(self):
-        return self.suit
+        return self.naipe
 
     def grab_ordem(self):
         return self.ordem
 
     def draw(self):
-        print(self.suit + self.rank)
+        print(self.naipe + self.ordem)
+
+
+class Mão:
+
+    def __init__(self):
+        self.carta = []
+        self.valor = 0
+        self.ace = False
+
+    def __str__(self):
+        maoComp = ""
+
+        for carta in self.carta:
+            carta.nome = carta.__str__()
+            maoComp += " " + carta.nome
+
+        return "Sua mão é: {}".format(carta.nome)
+
+    def cartaAdicionar(self, carta):
+        self.carta.append(carta)
+
+        if carta.ordem == 'A':
+            self.ace = True
+        self.valor += valor[carta.ordem]
+
+    def calculoValor(self):
+        if(self.ace == 'True' and self.valor < 12):
+            return self.valor + 10
+        else:
+            return self.valor
+
+    def draw(self, oculta):
+        if oculta is True and playing is True:
+            cartaInicio = 1
+        else:
+            cartaInicio = 0
+        for x in range(cartaInicio, len(self.carta)):
+            self.carta[x].draw()
