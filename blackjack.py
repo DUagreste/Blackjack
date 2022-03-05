@@ -1,10 +1,10 @@
 # Embaralhar cartas
 import random
 
-playing = False
-chip_pool = 100
+jogando = False
+carteira = 100
 
-bet = 1
+aposta = 1
 
 jogar_novamente = "Aperte ENTER para jogar navamente e SPACE para sair!"
 
@@ -62,7 +62,7 @@ class Mão:
             return self.valor
 
     def draw(self, oculta):
-        if oculta is True and playing is True:
+        if oculta is True and jogando is True:
             cartaInicio = 1
         else:
             cartaInicio = 0
@@ -81,7 +81,7 @@ class Baralho:
     def embaralhar(self):
         random.embaralhar(self.baralho)
 
-    def pedir(self):
+    def pedirCarta(self):
         umaCarta = self.baralho.pop()
         return umaCarta
 
@@ -102,7 +102,33 @@ def fazerAposta():
         apostaComp = input()
         apostaComp = int(apostaComp)
 
-        if apostaComp >= 1 and apostaComp <= chip_pool:
+        if apostaComp >= 1 and apostaComp <= carteira:
             aposta = apostaComp
         else:
             print("Aposta Inválida!")
+
+
+def distribuirCartas():
+    global resultado, jogando, baralho, maoJogador, maoCrupie, carteira, aposta
+
+    baralho = baralho()
+    baralho.embaralhar()
+
+    fazerAposta()
+
+    maoJogador = mao()
+    maoCrupie = mao()
+
+    # 2 cartas para o Jogador
+    maoJogador.cartaAdicionar(baralho.pedirCarta())
+    maoJogador.cartaAdicionar(baralho.pedirCarta())
+
+    # 2 cartas para o Crupiê
+    maoCrupie.cartaAdicionar(baralho.pedirCarta())
+    maoCrupie.cartaAdicionar(baralho.pedirCarta())
+
+    resultado = "Pedir ou ficar? Aperte 'p' ou 'f':"
+ 
+    carteira -= aposta
+    jogando = True
+    primeiroPasso()
