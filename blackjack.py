@@ -1,78 +1,46 @@
-# Embaralhar as cartas
+# Importando módulos e definindo variáveis
+
 import random
 
-playing = False
-wallet = 100
-bet = 1
-
-restart = "Press 'd' to shuffle again or press 'q' to quit."
+playing = True
 
 suits = ('♥', '♦', '♣', '♠')
 ranking = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
-card_value = {'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
-              '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10}
+values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, 
+          '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
 
 
-class Card:
+# Classes
+class Card:  # Criando as cartas
 
     def __init__(self, suit, rank):
         self.suit = suit
         self.rank = rank
 
     def __str__(self):
-        return self.suit + self.rank
-
-    def grab_suit(self):
-        return self.suit
-
-    def grab_rank(self):
-        return self.rank
-
-    def draw(self):
-        print(self.suit + self.rank)
+        return self.rank + self.suit
 
 
-class Hand:
+class Hand:    # Criando as mãos de cartas do Jogador e Dealer
 
     def __init__(self):
         self.cards = []
         self.value = 0
-        self.ace = False
+        self.ace = 0    # Acompanha os Aces
 
-    def __str__(self):
-        hand_comp = ""
-
-        for card in self.cards:
-            card_name = card.__str__()
-            hand_comp += " " + card_name
-
-        return "The hand has {}".format(hand_comp)
-
-    def card_add(self, card):
-        self.card.append(card)
-
+    def card_add(self, card):   # Adiciona cartas as mãos do Jogador e Dealer
+        self.cards.append(card)
+        self.value += values[card.rank]
         if card.rank == 'A':
-            self.ace = True
+            self.ace += 1
 
-        self.value += card_value[card.rank]
-
-    def calc_value(self):
-        if (self.ace is True and self.value < 12):
-            return self.value + 10
-        else:
-            return self.value
-
-    def draw(self, hidden):
-        if hidden is True and playing is True:
-            starting_card = 1
-        else:
-            starting_card = 0
-
-        for x in range(starting_card, len(self.cards)):
-            self.cards[x].draw()
+    def adjust_ace(self):
+        while self.value > 21 and self.ace:
+            self.value -= 10
+            self.ace -= 1
 
 
-class Deck:
+class Deck:    # Criando o baralho
 
     def __init__(self):
         self.deck = []
@@ -81,155 +49,176 @@ class Deck:
             for rank in ranking:
                 self.deck.append(Card(suit, rank))
 
-    def shuffle(self):
+    def __str__(self):
+        deck_comp = ''
+        for card in self.deck:
+            deck_comp += '\n ' + card.__str__()
+        return 'The deck has: ' + deck_comp
+
+    def shuffle(self):    # Embaralha as cartas
         random.shuffle(self.deck)
 
-    def deal(self):
+    def deal(self):    # Escolhe UMA carta do baralho
         single_card = self.deck.pop()
-
-    def __str__(self):
-        deck_comp = ""
-        for card in self.deck:
-            deck_comp += " " + card.__str__()
-
-        return "The deck has " + deck_comp
+        return single_card
 
 
-def make_bet():
-    global bet
-    bet = 0
+class Bets:    # Para fazer apostas
 
-    print("How much do you want to bet? ")
+    def __init__(self):
+        self.total = 100
+        self.bet = 0
 
-    while bet == 0:
-        bet_comp = input()
-        bet_comp = int(bet_comp)
+    def bet_win(self):
+        self.total += self.bet
 
-        if bet_comp >= 1 and bet_comp <= wallet:
-            bet = bet_comp
+    def bet_lose(self):
+        self.total -= self.bet
+
+
+# Funções
+def make_bet(bets):   # Faz a aposta
+
+    while True:
+        try:
+            bets.bet = int(input('How much do you want to bet? '))
+        except ValueError:
+            print('Sorry, please can you type in a number: ')
         else:
-            print("Invalid bet. Enter a whole number or check your balance.")
+            if bets.bet > bets.total:
+                print('Your bet has exceeded the value of your wallet.')
+            else:
+                break
 
 
-def deal_cards():
-    global result, playing, deck, player_Hand, dealer_Hand, wallet, bet
+def hit(deck, hand):
+    hand.card_add(deck.deal())
+    hand.adjust_ace()
 
+
+def hit_stand(deck, hand):    # Hit ou Stand?
+    global playing
+
+    while True:
+        ask = input("\nHit or Stand? Enter 'h' or 's': ")
+
+        if ask[0].lower() == 'h':
+            hit(deck, hand)
+        elif ask[0].lower() == 's':
+            print("Player stand, Dealer is playing.")
+            playing = False
+        else:
+            print("Sorry, i did not understand. Please, try again!")
+            continue
+        break
+
+
+def show_some(player, dealer):
+    print("\nDealer hand: ")
+    print(" <card hidden> ")
+    print("", dealer.cards[1])
+    print("\nPlayer hand:", *player.cards, sep='\n')
+
+
+def show_all(player, dealer):
+    print("\nDealer hand: ", *dealer.cards, sep='\n')
+    print("Hand value = ", dealer.value)
+    print("\nPlayer hand:", *player.cards, sep='\n')
+    print("Hand value = ", player.value)
+
+
+# Final do jogo
+def player_burst(player, dealer, bets):
+    print("Player Burst!")
+    bets.bet_lose()
+
+
+def player_wins(player, dealer, bets):
+    print("\n**** Player Wins! ****")
+    bets.bet_win()
+
+
+def dealer_burst(player, dealer, bets):
+    print("\n**** Dealer Burst! ****")
+    bets.bet_win()
+
+
+def dealer_wins(player, dealer, bets):
+    print("\n**** Dealer Wins! ****")
+    bets.bet_lose()
+
+
+def push(player, dealer):
+    print("\n**** Player and Dealer tie!****")
+
+
+# O jogo
+
+while True:
+    print(33*'-')
+    print("***** Welcome to BlackJack *****")
+    print(33*'-')
+
+    # Embaralhando e distribuindo as cartas
     deck = Deck()
     deck.shuffle()
 
-    make_bet()
+    player_hand = Hand()
+    player_hand.card_add(deck.deal())
+    player_hand.card_add(deck.deal())
 
-    player_Hand = Hand()
-    dealer_Hand = Hand()
+    dealer_hand = Hand()
+    dealer_hand.card_add(deck.deal())
+    dealer_hand.card_add(deck.deal())
 
-    # Adicionando 2 cartas para o jogador
-    player_Hand.card_add(deck.deal())
-    player_Hand.card_add(deck.deal())
+    # Definindo o valor da carteira do Jogador
+    player_bets = Bets()
 
-    # Adicionando 2 cartas para o dealer
-    dealer_Hand.card_add(deck.deal())
-    dealer_Hand.card_add(deck.deal())
+    # Pergunta a aposta
+    make_bet(player_bets)
 
-    result = "Hit or Stand? Press 'h' or 's': "
+    # Mostrar as cartas
+    show_some(player_hand, dealer_hand)
 
-    playing = True
+    while playing:
 
-    game_step()
+        hit_stand(deck, player_hand)
+        show_some(player_hand, dealer_hand)
 
+        if player_hand.value > 21:
+            player_burst(player_hand, dealer_hand, player_bets)
+            break
 
-def hit():
-    global playing, wallet, deck, player_Hand, dealer_Hand, result, bet
+    if player_hand.value <= 21:
 
-    if playing:
-        if player_Hand.calc_value() <= 21:
-            player_Hand.card_add(deck.deal())
-        print("Player hand is {}".format(player_Hand))
+        while dealer_hand.value < 17:
+            hit(deck, dealer_hand)
 
-        if player_Hand.calc_value() > 21:
-            result = "Busted! " + restart
-            wallet -= bet
-            playing = False
-        print("Player hand is {}".format(player_Hand))
+        show_all(player_hand, dealer_hand)
 
-    else:
-        result = "Sorry, can't hit!" + restart
+        if dealer_hand.value > 21:
+            dealer_burst(player_hand, dealer_hand, player_bets)
 
-    game_step()
+        elif dealer_hand.value > player_hand.value:
+            dealer_wins(player_hand, dealer_hand, player_bets)
 
+        elif dealer_hand.value < player_hand.value:
+            player_wins(player_hand, dealer_hand, player_bets)
 
-def stand():
-    global playing, wallet, deck, player_Hand, dealer_Hand, result, bet
-
-    if playing is False:
-        if player_Hand.calc_value() > 0:
-            result = "Sorry, you can't stand!"
-
-    else:
-        while dealer_Hand.calc_value() < 17:
-            dealer_Hand.card_add(deck.deal())
-
-        if dealer_Hand.calc_value() > 21:
-            result = "Dealer busts! You win! " + restart
-            wallet += bet
-            playing = False
-
-        elif dealer_Hand.calc_value() < player_Hand.calc_value():
-            result = "You beat the dealer! You win! " + restart
-            wallet += bet
-            playing = False
-
-        elif dealer_Hand.calc_value() == player_Hand.calc_value():
-            result = "It was a draw! " + restart
-            playing = False
+        elif player_hand.value > 21:
+            player_burst(player_hand, dealer_hand, player_bets)
 
         else:
-            result = "Dealer wins! " + restart
-            wallet -= bet
+            push(player_hand, dealer_hand)
 
-    game_step()
+    print("\nPlayer winnings stand at: ", player_bets.total)
 
-
-def game_step():
-    print("")
-    print("Player hand is:")
-    player_Hand.draw(hidden=False)
-    print(" Player hand value: " + str(player_Hand.calc_value))
-
-    print("")
-    print("Dealer hand is:")
-    dealer_Hand.draw(hidden=True)
-    print(" Dealer hand value: " + str(dealer_Hand.calc_value))
-
-    if playing is False:
-        print("Wallet: " + str(wallet))
-
-    print(result)
-
-    player_input()
-
-
-def game_exit():
-    print("Thanks for playing!")
-    exit()
-
-
-def player_input():
-    plin = input().lower()
-
-    if plin == 'h':
-        hit()
-    elif plin == 's':
-        stand()
-    elif plin == 'd':
-        deal_cards()
-    elif plin == 'q':
-        game_exit()
+    new_game = input("Play again? Enter 'y' or 'n': ")
+    if new_game[0].lower() == 'y':
+        playing = True
+        continue
     else:
-        print("Invalid input. Enter with: | h | s | d | q |")
-        player_input()
-
-
-def intro():
-    statement = "Welcome to BlackJack!"
-    print(statement)
-
+        print(20*'-')
+        print("Thanks for playing!")
+        print(20*'-')
+        break
