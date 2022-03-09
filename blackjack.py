@@ -135,3 +135,80 @@ def deal_cards():
     playing = True
 
     game_step()
+
+
+def hit():
+    global playing, wallet, deck, player_Hand, dealer_Hand, result, bet
+
+    if playing:
+        if player_Hand.calc_value() <= 21:
+            player_Hand.card_add(deck.deal())
+        print("Player hand is {}".format(player_Hand))
+
+        if player_Hand.calc_value() > 21:
+            result = "Busted! " + restart
+            wallet -= bet
+            playing = False
+        print("Player hand is {}".format(player_Hand))
+
+    else:
+        result = "Sorry, can't hit!" + restart
+
+    game_step()
+
+
+def stand():
+    global playing, wallet, deck, player_Hand, dealer_Hand, result, bet
+
+    if playing is False:
+        if player_Hand.calc_value() > 0:
+            result = "Sorry, you can't stand!"
+
+    else:
+        while dealer_Hand.calc_value() < 17:
+            dealer_Hand.card_add(deck.deal())
+
+        if dealer_Hand.calc_value() > 21:
+            result = "Dealer busts! You win! " + restart
+            wallet += bet
+            playing = False
+
+        elif dealer_Hand.calc_value() < player_Hand.calc_value():
+            result = "You beat the dealer! You win! " + restart
+            wallet += bet
+            playing = False
+
+        elif dealer_Hand.calc_value() == player_Hand.calc_value():
+            result = "It was a draw! " + restart
+            playing = False
+
+        else:
+            result = "Dealer wins! " + restart
+            wallet -= bet
+
+    game_step()
+
+
+def game_step():
+    print("")
+    print("Player hand is:")
+    player_Hand.draw(hidden=False)
+    print(" Player hand value: " + str(player_Hand.calc_value))
+
+    print("")
+    print("Dealer hand is:")
+    dealer_Hand.draw(hidden=True)
+    print(" Dealer hand value: " + str(dealer_Hand.calc_value))
+
+    if playing is False:
+        print("Wallet: " + str(wallet))
+
+    print(result)
+
+    player_input()
+
+
+def game_exit():
+    print("Thanks for playing!")
+    exit()
+    
