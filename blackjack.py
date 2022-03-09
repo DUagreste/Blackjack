@@ -70,3 +70,42 @@ class Hand:
 
         for x in range(starting_card, len(self.cards)):
             self.cards[x].draw()
+
+
+class Deck:
+
+    def __init__(self):
+        self.deck = []
+
+        for suit in suits:
+            for rank in ranking:
+                self.deck.append(Card(suit, rank))
+
+    def shuffle(self):
+        random.shuffle(self.deck)
+
+    def deal(self):
+        single_card = self.deck.pop()
+
+    def __str__(self):
+        deck_comp = ""
+        for card in self.deck:
+            deck_comp += " " + card.__str__()
+
+        return "The deck has " + deck_comp
+
+
+def make_bet():
+    global bet
+    bet = 0
+
+    print("How much do you want to bet? ")
+
+    while bet == 0:
+        bet_comp = raw_input()
+        bet_comp = int(bet_comp)
+
+        if bet_comp >= 1 and bet_comp <= wallet:
+            bet = bet_comp
+        else:
+            print("Invalid bet. Enter a whole number or check your balance.")
