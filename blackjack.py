@@ -32,3 +32,41 @@ class Card:
         print(self.suit + self.rank)
 
 
+class Hand:
+
+    def __init__(self):
+        self.cards = []
+        self.value = 0
+        self.ace = False
+
+    def __str__(self):
+        hand_comp = ""
+
+        for card in self.cards:
+            card_name = card.__str__()
+            hand_comp += " " + card_name
+
+        return "The hand has {}".format(hand_comp)
+
+    def card_add(self, card):
+        self.card.append(card)
+
+        if card.rank == 'A':
+            self.ace = True
+
+        self.value += card_value[card.rank]
+
+    def calc_value(self):
+        if (self.ace is True and self.value < 12):
+            return self.value + 10
+        else:
+            return self.value
+
+    def draw(self, hidden):
+        if hidden is True and playing is True:
+            starting_card = 1
+        else:
+            starting_card = 0
+
+        for x in range(starting_card, len(self.cards)):
+            self.cards[x].draw()
