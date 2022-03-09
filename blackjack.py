@@ -102,10 +102,36 @@ def make_bet():
     print("How much do you want to bet? ")
 
     while bet == 0:
-        bet_comp = raw_input()
+        bet_comp = input()
         bet_comp = int(bet_comp)
 
         if bet_comp >= 1 and bet_comp <= wallet:
             bet = bet_comp
         else:
             print("Invalid bet. Enter a whole number or check your balance.")
+
+
+def deal_cards():
+    global result, playing, deck, player_Hand, dealer_Hand, wallet, bet
+
+    deck = Deck()
+    deck.shuffle()
+
+    make_bet()
+
+    player_Hand = Hand()
+    dealer_Hand = Hand()
+
+    # Adicionando 2 cartas para o jogador
+    player_Hand.card_add(deck.deal())
+    player_Hand.card_add(deck.deal())
+
+    # Adicionando 2 cartas para o dealer
+    dealer_Hand.card_add(deck.deal())
+    dealer_Hand.card_add(deck.deal())
+
+    result = "Hit or Stand? Press 'h' or 's': "
+
+    playing = True
+
+    game_step()
