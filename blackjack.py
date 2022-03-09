@@ -5,7 +5,7 @@ playing = False
 wallet = 100
 bet = 1
 
-restart = "Press 's' to shuffle again or press 'l' to leave."
+restart = "Press 'd' to shuffle again or press 'q' to quit."
 
 suits = ('♥', '♦', '♣', '♠')
 ranking = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
@@ -204,10 +204,32 @@ def game_step():
         print("Wallet: " + str(wallet))
 
     print(result)
+
     player_input()
 
 
 def game_exit():
     print("Thanks for playing!")
     exit()
+
+
+def player_input():
+    plin = input().lower()
+
+    if plin == 'h':
+        hit()
+    elif plin == 's':
+        stand()
+    elif plin == 'd':
+        deal_cards()
+    elif plin == 'q':
+        game_exit()
+    else:
+        print("Invalid input. Enter with: | h | s | d | q |")
+        player_input()
+
+
+def intro():
+    statement = "Welcome to BlackJack!"
+    print(statement)
 
