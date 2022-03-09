@@ -187,28 +187,4 @@ def stand():
             wallet -= bet
 
     game_step()
-
-
-def game_step():
-    print("")
-    print("Player hand is:")
-    player_Hand.draw(hidden=False)
-    print(" Player hand value: " + str(player_Hand.calc_value))
-
-    print("")
-    print("Dealer hand is:")
-    dealer_Hand.draw(hidden=True)
-    print(" Dealer hand value: " + str(dealer_Hand.calc_value))
-
-    if playing is False:
-        print("Wallet: " + str(wallet))
-
-    print(result)
-
-    player_input()
-
-
-def game_exit():
-    print("Thanks for playing!")
-    exit()
-    
+  
