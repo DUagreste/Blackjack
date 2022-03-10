@@ -6,7 +6,7 @@ playing = True
 
 suits = ('♥', '♦', '♣', '♠')
 ranking = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
-values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, 
+values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
           '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11}
 
 
@@ -121,7 +121,7 @@ def show_some(player, dealer):
 
 
 def show_all(player, dealer):
-    print("\nDealer hand: ", *dealer.cards, sep='\n')
+    print("Dealer hand: ", *dealer.cards, sep='\n')
     print("Hand value = ", dealer.value)
     print("\nPlayer hand:", *player.cards, sep='\n')
     print("Hand value = ", player.value)
@@ -129,7 +129,7 @@ def show_all(player, dealer):
 
 # Final do jogo
 def player_burst(player, dealer, bets):
-    print("Player Burst!")
+    print("\n**** Player Burst! ****")
     bets.bet_lose()
 
 
@@ -186,6 +186,8 @@ while True:
         show_some(player_hand, dealer_hand)
 
         if player_hand.value > 21:
+            print(30*'-')
+            show_all(player_hand, dealer_hand)
             player_burst(player_hand, dealer_hand, player_bets)
             break
 
@@ -194,6 +196,7 @@ while True:
         while dealer_hand.value < 17:
             hit(deck, dealer_hand)
 
+        print(30*'-')
         show_all(player_hand, dealer_hand)
 
         if dealer_hand.value > 21:
@@ -213,7 +216,7 @@ while True:
 
     print("\nPlayer winnings stand at: ", player_bets.total)
 
-    new_game = input("Play again? Enter 'y' or 'n': ")
+    new_game = input("\nPlay again? Enter 'y' or 'n': ")
     if new_game[0].lower() == 'y':
         playing = True
         continue
