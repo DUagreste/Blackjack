@@ -105,6 +105,7 @@ def hit_stand(deck, hand):    # Hit ou Stand?
         if ask[0].lower() == 'h':
             hit(deck, hand)
         elif ask[0].lower() == 's':
+            print(30*'-')
             print("Player stand, Dealer is playing.")
             playing = False
         else:
@@ -193,7 +194,7 @@ while True:
 
     if player_hand.value <= 21:
 
-        while dealer_hand.value < 17:
+        while dealer_hand.value < 17 or dealer_hand.value <= player_hand.value:
             hit(deck, dealer_hand)
 
         print(30*'-')
